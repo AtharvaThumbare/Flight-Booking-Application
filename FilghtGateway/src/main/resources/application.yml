@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: FilghtGateway
+  cloud:
+    gateway:
+      routes:
+        - id: AuthService
+          uri: http://localhost:8081
+          predicates:
+            - name: Path
+              args:
+                pattern: "/api/auth/**"
+        - id: customerService
+          uri: http://localhost:8081
+          predicates:
+            - name: Path
+              args:
+                pattern: "/customer/**"
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    secret: FlightAuthServiceSecretKey2099ForJWTAuthentication
+    expiration: 86400000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
