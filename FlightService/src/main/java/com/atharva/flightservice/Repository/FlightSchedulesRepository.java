@@ -2,11 +2,15 @@ package com.atharva.flightservice.Repository;
 
 import com.atharva.flightservice.DTO.SearchRequest;
 import com.atharva.flightservice.Entity.FlightSchedules;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface FlightSchedulesRepository extends JpaRepository<FlightSchedules, Long> {
 
@@ -42,6 +46,18 @@ public interface FlightSchedulesRepository extends JpaRepository<FlightSchedules
     );
 
 
+
+
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+    SELECT f
+    FROM FlightSchedules f
+    WHERE f.flightUUID = :uuid
+""")
+    Optional<FlightSchedules> findFlightSchedulesByFlightUUID(
+            UUID uuid
+    );
 
 
 }

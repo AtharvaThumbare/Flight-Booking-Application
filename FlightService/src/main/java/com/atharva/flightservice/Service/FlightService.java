@@ -1,15 +1,27 @@
 package com.atharva.flightservice.Service;
 
 import com.atharva.flightservice.DTO.*;
-import jakarta.validation.Valid;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface FlightService {
 
        void createFlightData(CreateFlightRequest createFlightRequest);
-       FlightResponse getFlightById(long id);
+       FlightResponse getFlightById(UUID id);
       List< FlightSearchResponse> searchFlights(SearchRequest searchRequest);
 
-       void updateFlightStatus(long id,@Valid UpdateFlightStatusRequest updateFlightStatusRequest);
+       void updateFlightStatus(UUID uuid, UpdateFlightStatusRequest updateFlightStatusRequest);
+
+               void updateFlightPrice(UUID uuid,  UpdateFlightPrice updateFlightPrice);
+
+               void updateAircraft(UUID uuid,  UpdateAircraft updateAircraftRequest);
+
+                void updateFlightSchedule(UUID uuid,  UpdateFlightSchedule updateFlightSchedule);
+
+                void cancelFlight(UUID uuid);
+
+                void reserveSeats(UUID uuid, ReserveSeatsRequest reservationRequest);
+
+                        void releaseFlight(UUID uuid);
 }

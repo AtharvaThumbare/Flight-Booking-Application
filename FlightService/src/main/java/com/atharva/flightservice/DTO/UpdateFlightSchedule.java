@@ -2,7 +2,7 @@ package com.atharva.flightservice.DTO;
 
 import java.time.LocalDateTime;
 
-public record UpdateTimings(
+public record UpdateFlightSchedule(
 
 
         LocalDateTime departure_time,

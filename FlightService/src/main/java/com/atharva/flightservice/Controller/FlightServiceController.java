@@ -1,23 +1,23 @@
 package com.atharva.flightservice.Controller;
 
 
-import com.atharva.flightservice.DTO.CreateFlightRequest;
-import com.atharva.flightservice.DTO.SearchRequest;
-import com.atharva.flightservice.DTO.UpdateFlightStatusRequest;
+import com.atharva.flightservice.DTO.*;
 import com.atharva.flightservice.Service.FlightService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
 
 
 @RestController
 @RequestMapping("/api/flights")
-
+@RequiredArgsConstructor
 public class FlightServiceController {
 
-    private FlightService flightService;
+    private final FlightService flightService;
 
       @PostMapping
       public ResponseEntity<?> createFlight(@RequestBody @Valid CreateFlightRequest flightRequest) {
@@ -25,32 +25,76 @@ public class FlightServiceController {
             return new  ResponseEntity<>(HttpStatus.CREATED);
       }
 
-      @GetMapping("/{id}")
-       public ResponseEntity<?> getFlightById(@PathVariable long id) {
+      @GetMapping("/{uuid}")
+       public ResponseEntity<?> getFlightById(@PathVariable UUID uuid) {
 
-              return new ResponseEntity<>(flightService.getFlightById(id), HttpStatus.OK);
+              return new ResponseEntity<>(flightService.getFlightById(uuid), HttpStatus.OK);
 
       }
 
       @GetMapping
-       public ResponseEntity<?> searchFlights(@RequestBody @Valid SearchRequest searchRequest) {
+       public ResponseEntity<?> searchFlights( @Valid SearchRequest searchRequest) {
 
               return new ResponseEntity<>(flightService.searchFlights(searchRequest), HttpStatus.OK);
 
 
       }
 
-      @PatchMapping("/{id}/status")
-    public ResponseEntity<?> updateFlightStatus(@RequestBody @Valid UpdateFlightStatusRequest updateFlightStatusRequest, @PathVariable long id)
+      @PatchMapping("/{uuid}/status")
+    public ResponseEntity<?> updateFlightStatus(@RequestBody @Valid UpdateFlightStatusRequest updateFlightStatusRequest, @PathVariable UUID uuid)
        {
 
-              flightService.updateFlightStatus(id,updateFlightStatusRequest);
+              flightService.updateFlightStatus(uuid,updateFlightStatusRequest);
               return new ResponseEntity<>(HttpStatus.OK);
 
       }
 
-      @PatchMapping("{id}/price")
-      public ResponseEntity<>
+      @PatchMapping("{uuid}/price")
+      public ResponseEntity<?> updateFlightPrice(@RequestBody @Valid UpdateFlightPrice updateFlightPrice, @PathVariable UUID uuid)
+      {
+             flightService.updateFlightPrice( uuid,updateFlightPrice);
+             return new ResponseEntity<>(HttpStatus.OK);
+      }
+
+      @PatchMapping("{uuid}/aircraft")
+    public ResponseEntity<?> updateAircraft(@RequestBody @Valid UpdateAircraft updateAircraftRequest, @PathVariable UUID uuid)
+      {
+               flightService.updateAircraft(uuid,updateAircraftRequest);
+             return new ResponseEntity<>(HttpStatus.OK);
+      }
+
+      @PatchMapping("{uuid}/schedule")
+      public ResponseEntity<?> updateFlightSchedule(@RequestBody @Valid UpdateFlightSchedule updateFlightSchedule, @PathVariable UUID uuid)
+      {
+              flightService.updateFlightSchedule(uuid,updateFlightSchedule);
+             return new ResponseEntity<>(HttpStatus.OK);
+      }
+
+    @PatchMapping("/{uuid}/cancel")
+    public ResponseEntity<?> cancelFlight(@PathVariable UUID uuid) {
+        flightService.cancelFlight(uuid);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/{uuid}/reserve")
+    public ResponseEntity<?> reserveFlight(@PathVariable UUID uuid,ReserveSeatsRequest reserveSeatsRequest) {
+
+          flightService.reserveSeats(uuid,reserveSeatsRequest);
+          return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+    @PostMapping("/{uuid}/release")
+    public ResponseEntity<?> releaseFlight(@PathVariable UUID uuid) {
+          flightService.releaseFlight(uuid);
+          return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+
+
+
+
 
 
 

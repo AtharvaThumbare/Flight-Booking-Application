@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record CreateFlightRequest(
 
@@ -13,13 +14,13 @@ public record CreateFlightRequest(
         String flightNumber,
 
         @NotNull
-        Long airlineId,
+        UUID airlineUUId,
 
         @NotNull
-        Long aircraftId,
+        UUID aircraftUUId,
 
         @NotNull
-        Long routeId,
+        UUID routeUUId,
 
         @NotNull
         LocalDateTime departureTime,

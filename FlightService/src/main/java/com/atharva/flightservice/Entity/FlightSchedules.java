@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -20,6 +21,9 @@ public class FlightSchedules {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column(nullable = false, unique = true)
+    private UUID flightUUID;
 
     @Column(nullable = false)
     private String flight_number;
@@ -37,13 +41,13 @@ public class FlightSchedules {
     private Route route;
 
     @Column(nullable = false)
-    private LocalDateTime departure_time;
+    private LocalDateTime departureTime;
 
     @Column(nullable = false)
-    private LocalDateTime arrival_time;
+    private LocalDateTime arrivalTime;
 
     @Column(nullable = false)
-    private Integer available_seats;
+    private Integer availableSeats;
 
     @Column(nullable = false)
     private BigDecimal basePrice;
@@ -61,6 +65,12 @@ public class FlightSchedules {
         BOARDING,
         DEPARTED,
         ARRIVED
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.flightUUID = UUID.randomUUID();
+
     }
 
 
