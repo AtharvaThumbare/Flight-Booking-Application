@@ -66,7 +66,20 @@ public class JwtAuthenticationFilter implements WebFilter {
         SecurityContextImpl securityContext =
                 new SecurityContextImpl(auth);
 
-        return chain.filter(exchange)
+
+        ServerHttpRequest mutatedRequest =
+                exchange.getRequest()
+                        .mutate()
+                        .header("X-User-Id", userUUID)
+                        .build();
+
+        ServerWebExchange mutatedExchange =
+                exchange.mutate()
+                        .request(mutatedRequest)
+                        .build();
+
+        return chain.filter(mutatedExchange)
+
                 .contextWrite(
                         ReactiveSecurityContextHolder
                                 .withSecurityContext(
