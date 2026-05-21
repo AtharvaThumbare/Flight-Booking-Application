@@ -2,14 +2,12 @@ package com.atharva.bookingservice.Controllers;
 
 
 import com.atharva.bookingservice.DTO.BookingRequest;
-import com.atharva.bookingservice.DTO.PassengerRequest;
 import com.atharva.bookingservice.Service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,12 +17,20 @@ public class BookingController {
       private final BookingService bookingService;
 
         @PostMapping
-    public ResponseEntity<?> createBooking(@RequestBody BookingRequest bookingRequest) {
+    public ResponseEntity<?> createBooking(@RequestHeader("X-User-Id") UUID userUUID ,@PathVariable UUID filghtUUID, @RequestBody BookingRequest bookingRequest) {
 
-                 bookingService.bookFlight(bookingRequest);
+                 bookingService.bookFlight(userUUID, filghtUUID, bookingRequest);
 
 
                 return ResponseEntity.ok("Booking created successfully");
         }
+
+
+         @PostMapping
+        public ResponseEntity<?> cancelBooking(@PathVariable UUID bookingUUID) {
+
+             bookingService.cancelFLight(bookingUUID);
+             return ResponseEntity.ok("Booking cancelled successfully");
+         }
 
 }

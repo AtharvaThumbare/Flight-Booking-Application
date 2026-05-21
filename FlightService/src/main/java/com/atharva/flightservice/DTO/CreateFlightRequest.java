@@ -1,6 +1,6 @@
 package com.atharva.flightservice.DTO;
 
-import jakarta.validation.constraints.NotBlank;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -10,8 +10,8 @@ import java.util.UUID;
 
 public record CreateFlightRequest(
 
-        @NotBlank
-        String flightNumber,
+//        @NotBlank
+//        String flightNumber,
 
         @NotNull
         UUID airlineUUId,
@@ -28,9 +28,9 @@ public record CreateFlightRequest(
         @NotNull
         LocalDateTime arrivalTime,
 
-        @NotNull
-        @Positive
-        Integer availableSeats,
+//        @NotNull
+//        @Positive
+//        Integer availableSeats,
 
         @NotNull
         @Positive

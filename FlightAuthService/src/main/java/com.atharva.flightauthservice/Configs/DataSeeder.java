@@ -15,7 +15,7 @@ public class DataSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        if(roleRepository.findByRole("ROLE_ADMIN").isEmpty()) {
+        if(!roleRepository.findByRole("ROLE_ADMIN").isPresent()) {
 
             Role admin = new Role();
             admin.setRole("ROLE_ADMIN");
@@ -23,7 +23,7 @@ public class DataSeeder implements CommandLineRunner {
             roleRepository.save(admin);
         }
 
-        if(roleRepository.findByRole("ROLE_CUSTOMER").isEmpty()) {
+        if(!roleRepository.findByRole("ROLE_CUSTOMER").isPresent()) {
 
             Role customer = new Role();
             customer.setRole("ROLE_CUSTOMER");
@@ -31,7 +31,7 @@ public class DataSeeder implements CommandLineRunner {
             roleRepository.save(customer);
         }
 
-        if(roleRepository.findByRole("ROLE_AIRLINE_MANAGER").isEmpty()) {
+        if(!roleRepository.findByRole("ROLE_AIRLINE_MANAGER").isPresent()) {
 
             Role airlineManager = new Role();
             airlineManager.setRole("ROLE_AIRLINE_MANAGER");

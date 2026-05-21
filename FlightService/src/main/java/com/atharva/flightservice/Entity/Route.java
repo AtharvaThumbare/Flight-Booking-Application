@@ -3,15 +3,21 @@ package com.atharva.flightservice.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Entity
+@Table(name="routes")
 public class Route {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+
 
     @Column(nullable = false, unique = true)
     private UUID routeUUId;
@@ -30,8 +36,13 @@ public class Route {
 
 
     @PrePersist
-    public void prePersist() {
-        this.routeUUId = UUID.randomUUID();
+    protected void prePersist() {
+        if (this.routeUUId == null) {
+            this.routeUUId = UUID.randomUUID();
 
+        }
     }
+
+
+
 }

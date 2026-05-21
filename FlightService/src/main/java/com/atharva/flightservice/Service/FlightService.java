@@ -21,7 +21,7 @@ public interface FlightService {
 
                 void cancelFlight(UUID uuid);
 
-                void reserveSeats(UUID uuid, ReserveSeatsRequest reservationRequest);
+                ReserveSeatsResponse reserveSeats(UUID uuid, ReserveSeatsRequest reservationRequest);
 
-                        void releaseFlight(UUID uuid);
+                        void releaseFlight(UUID uuid,ReserveSeatsRequest releaseSeatsRequest);
 }

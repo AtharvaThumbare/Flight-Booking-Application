@@ -1,6 +1,7 @@
 package com.atharva.flightservice.DTO;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
@@ -9,9 +10,9 @@ public record SearchRequest(
         String source,
         @NotBlank
         String destination,
-        @NotBlank
+        @NotNull
         LocalDate date,
-        @NotBlank
+        @NotNull
         Integer passengers
 ) {
 

@@ -3,11 +3,15 @@ package com.atharva.flightservice.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 
 import java.util.UUID;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "airlines")
 
 public class Airline {
@@ -15,7 +19,8 @@ public class Airline {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+
+    @Column( updatable = false, nullable = false, unique = true)
     private UUID airlineUUId;
 
     @Column(nullable = false, unique = true)
@@ -25,10 +30,14 @@ public class Airline {
     private String name;
 
     @PrePersist
-    public void prePersist() {
-        this.airlineUUId = UUID.randomUUID();
+    protected void prePersist() {
+        if (this.airlineUUId == null) {
+            this.airlineUUId = UUID.randomUUID();
 
-    }
+        }
+
+
+   }
 
 
 }

@@ -3,17 +3,24 @@ package com.atharva.flightservice.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Entity
-@Data
+@Getter
+@Setter
+@Table(name="airports")
 public class Airports {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+
     @Column(nullable = false, unique = true)
     private UUID airportUUId;
+
     @Column(nullable = false, unique = true, length = 10)
     private String code;
     @Column(nullable = false)
@@ -25,11 +32,12 @@ public class Airports {
     @Column(nullable = false)
     private String timezone;
 
-    @PrePersist
-    public void prePersist() {
-        this.airportUUId = UUID.randomUUID();
-
-    }
+     @PrePersist
+     protected void prePersist() {
+         if (this.airportUUId == null) {
+             this.airportUUId = UUID.randomUUID();
+         }
+     }
 
 
 

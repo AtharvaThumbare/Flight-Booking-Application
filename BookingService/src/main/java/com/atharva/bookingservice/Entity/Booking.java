@@ -2,14 +2,18 @@ package com.atharva.bookingservice.Entity;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Builder
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

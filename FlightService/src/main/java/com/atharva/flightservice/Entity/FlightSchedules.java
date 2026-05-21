@@ -1,32 +1,32 @@
 package com.atharva.flightservice.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name="flight_schedules")
 public class FlightSchedules {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
 
     @Column(nullable = false, unique = true)
     private UUID flightUUID;
 
     @Column(nullable = false)
-    private String flight_number;
+    private String flightNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false,name= "airlines_id")
@@ -67,11 +67,13 @@ public class FlightSchedules {
         ARRIVED
     }
 
-    @PrePersist
-    public void prePersist() {
-        this.flightUUID = UUID.randomUUID();
-
+     @PrePersist
+    protected void prePersist() {
+        if (this.flightUUID == null) {
+            this.flightUUID = UUID.randomUUID();
+        }
     }
+
 
 
 }

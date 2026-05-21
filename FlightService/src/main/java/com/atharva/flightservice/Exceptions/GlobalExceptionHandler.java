@@ -23,4 +23,10 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(NotEnoughSeatsException.class)
+    public ResponseEntity<?> handleException(NotEnoughSeatsException exception) {
+
+        return ResponseEntity.status(409).body(exception.getMessage());
+    }
+
 }

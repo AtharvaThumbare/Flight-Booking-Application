@@ -6,6 +6,7 @@ import com.atharva.flightservice.Entity.Airline;
 import com.atharva.flightservice.Entity.FlightSchedules;
 import com.atharva.flightservice.Entity.Route;
 import com.atharva.flightservice.Exceptions.DuplicateFlightException;
+import com.atharva.flightservice.Exceptions.NotEnoughSeatsException;
 import com.atharva.flightservice.Exceptions.ResourceNotFoundException;
 import com.atharva.flightservice.Repository.AircraftRepository;
 import com.atharva.flightservice.Repository.AirlineRepository;
@@ -16,13 +17,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class FlightServiceImplemantation implements FlightService {
+public class FlightServiceImplementation implements FlightService {
 
     private final FlightSchedulesRepository flightSchedulesRepository;
     private final AirlineRepository airlineRepository;
@@ -31,12 +33,6 @@ public class FlightServiceImplemantation implements FlightService {
 
     @Override
     public void createFlightData(CreateFlightRequest createFlightRequest) {
-               if(flightSchedulesRepository.existsByFlightNumberAndDepartureTime(
-                       createFlightRequest.flightNumber(),
-                       createFlightRequest.departureTime())) {
-                   throw new DuplicateFlightException("Flight with the same number and departure time already exists.");
-               }
-
         Airline airline = airlineRepository
                 .findAirlineByAirlineUUId(createFlightRequest.airlineUUId())
                 .orElseThrow(() ->
@@ -44,6 +40,23 @@ public class FlightServiceImplemantation implements FlightService {
                                 "Airline not found"
                         )
                 );
+
+
+           Integer highestNumber= flightSchedulesRepository.findHighestFlightNumberForAirline(airline.getCode());
+
+             int number=(highestNumber!=null)?highestNumber+1:100;
+
+             String generatedFightNumber=airline.getCode()+number;
+
+
+
+               if(flightSchedulesRepository.existsByFlightNumberAndDepartureTime(
+                       generatedFightNumber,
+                       createFlightRequest.departureTime())) {
+                   throw new DuplicateFlightException("Flight with the same number and departure time already exists.");
+               }
+
+
 
         Aircraft aircraft = aircraftRepository
                 .findAircraftByAircraftUUId(createFlightRequest.aircraftUUId())
@@ -61,31 +74,31 @@ public class FlightServiceImplemantation implements FlightService {
                         )
                 );
 
-               FlightSchedules flightSchedules = FlightSchedules.builder()
+                FlightSchedules flightSchedules = FlightSchedules.builder()
                        .airline(airline)
                        .aircraft(aircraft)
                        .route(route)
-                       .flight_number(createFlightRequest.flightNumber())
+                       .flightNumber(generatedFightNumber)
                        .departureTime(createFlightRequest.departureTime())
                        .arrivalTime(createFlightRequest.arrivalTime())
-                       .availableSeats(createFlightRequest.availableSeats())
+                       .availableSeats(aircraft.getTotalSeats())
                        .basePrice(createFlightRequest.basePrice())
                        .status(FlightSchedules.FlightStatus.SCHEDULED)
                        .build();
 
-
-
-
+         flightSchedulesRepository.save(flightSchedules);
 
     }
 
     @Override
     public FlightResponse getFlightById(UUID uuid) {
+
+
         FlightSchedules flightSchedules = flightSchedulesRepository.findFlightSchedulesByFlightUUID(uuid)
                 .orElseThrow(() -> new ResourceNotFoundException("Flight not found with id: " + uuid));
 
         return new FlightResponse(
-                flightSchedules.getFlight_number(),
+                flightSchedules.getFlightNumber(),
                 flightSchedules.getAirline().getName(),
                 flightSchedules.getRoute().getSource().getName(),
                 flightSchedules.getRoute().getDestination().getName(),
@@ -107,7 +120,7 @@ public class FlightServiceImplemantation implements FlightService {
                         .plusDays(1)
                         .atStartOfDay();
 
-        List<FlightSearchResponse> flightSearchResponseList = flightSchedulesRepository.searchFlights(
+        return flightSchedulesRepository.searchFlights(
                         searchRequest.source(),
 
                         searchRequest.destination(),
@@ -125,15 +138,14 @@ public class FlightServiceImplemantation implements FlightService {
                 .stream()
                 .map(flightSchedules -> new FlightSearchResponse(
 
-                        flightSchedules.getId(),
-                        flightSchedules.getFlight_number(),
+                        flightSchedules.getFlightUUID(),
+                        flightSchedules.getFlightNumber(),
                         flightSchedules.getAirline().getName(),
                         flightSchedules.getDepartureTime(),
                         flightSchedules.getArrivalTime(),
                         flightSchedules.getBasePrice().toString()
                 ))
                 .toList();
-        return flightSearchResponseList;
 
     }
 
@@ -195,21 +207,30 @@ public class FlightServiceImplemantation implements FlightService {
 
     @Override
     @Transactional
-    public void reserveSeats(UUID uuid, ReserveSeatsRequest reservationRequest) {
-        FlightSchedules flightSchedules = flightSchedulesRepository.findFlightSchedulesByFlightUUID(uuid)
+    public ReserveSeatsResponse reserveSeats(UUID uuid, ReserveSeatsRequest reservationRequest) {
+        FlightSchedules flightSchedules = flightSchedulesRepository.findFlightSchedulesByFlightUUIDForUpdate(uuid)
                 .orElseThrow(() -> new ResourceNotFoundException("Flight not found with id: " + uuid));
 
         if (flightSchedules.getAvailableSeats() < reservationRequest.passengers()) {
-            throw new IllegalArgumentException("Not enough available seats for reservation.");
+            throw new NotEnoughSeatsException("Not enough available seats for reservation.");
         }
+
+
 
         flightSchedules.setAvailableSeats(flightSchedules.getAvailableSeats() - reservationRequest.passengers());
         flightSchedulesRepository.save(flightSchedules);
+
+        return new ReserveSeatsResponse(flightSchedules.getBasePrice().multiply(BigDecimal.valueOf(reservationRequest.passengers())));
     }
 
     @Override
-    public void releaseFlight(UUID uuid) {
+    @Transactional
+    public void releaseFlight(UUID flightUUID,ReserveSeatsRequest reservationRequest) {
+        FlightSchedules flightSchedules = flightSchedulesRepository.findFlightSchedulesByFlightUUIDForUpdate(flightUUID)
+                .orElseThrow(() -> new ResourceNotFoundException("Flight not found with id: " + flightUUID));
 
+        flightSchedules.setAvailableSeats(flightSchedules.getAvailableSeats() - reservationRequest.passengers());
+        flightSchedulesRepository.save(flightSchedules);
     }
 
 

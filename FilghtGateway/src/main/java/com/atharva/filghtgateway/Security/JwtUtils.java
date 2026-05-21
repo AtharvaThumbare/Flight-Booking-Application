@@ -34,6 +34,20 @@ public class JwtUtils {
                 .getSubject();
     }
 
+    public String getUserUUIDFromToken(String token) {
+
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("userUUID", String.class);
+
+
+
+
+    }
+
     public List<String> extractRoles(String token) {
 
         Claims claims = Jwts.parserBuilder()

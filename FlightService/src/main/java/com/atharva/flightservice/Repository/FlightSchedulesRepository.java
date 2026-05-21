@@ -1,11 +1,12 @@
 package com.atharva.flightservice.Repository;
 
-import com.atharva.flightservice.DTO.SearchRequest;
+
 import com.atharva.flightservice.Entity.FlightSchedules;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,11 +30,11 @@ public interface FlightSchedulesRepository extends JpaRepository<FlightSchedules
         AND
         f.route.destination.code = :destination
         AND
-        f.departure_time >= :start
+        f.departureTime >= :start
         AND
-        f.departure_time < :end
+        f.departureTime < :end
         AND
-        f.available_seats >= :passengers
+        f.availableSeats >= :passengers
         AND
         f.status = 'SCHEDULED'
 """)
@@ -43,6 +44,10 @@ public interface FlightSchedulesRepository extends JpaRepository<FlightSchedules
         LocalDateTime start,
         LocalDateTime end,
         int passengers
+    );
+
+    Optional<FlightSchedules> findFlightSchedulesByFlightUUID(
+            UUID uuid
     );
 
 
@@ -55,9 +60,17 @@ public interface FlightSchedulesRepository extends JpaRepository<FlightSchedules
     FROM FlightSchedules f
     WHERE f.flightUUID = :uuid
 """)
-    Optional<FlightSchedules> findFlightSchedulesByFlightUUID(
+    Optional<FlightSchedules> findFlightSchedulesByFlightUUIDForUpdate(
             UUID uuid
     );
+
+    @Query(value = """
+        SELECT MAX(CAST(SUBSTRING(flightNumber FROM LENGTH(:airlineCode) + 1) AS INTEGER))
+        FROM flight_schedules
+        WHERE flightNumber LIKE CONCAT(:airlineCode, '%')
+        """, nativeQuery = true)
+    Integer findHighestFlightNumberForAirline(@Param("airlineCode") String airlineCode);
+
 
 
 }

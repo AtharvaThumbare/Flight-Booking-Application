@@ -1,5 +1,8 @@
 package com.atharva.bookingservice.DTO;
 
+
+import com.atharva.bookingservice.Enums.Gender;
+
 public record PassengerRequest(
 
         String firstName,
@@ -8,7 +11,11 @@ public record PassengerRequest(
 
         Integer age,
 
-        String gender
+        Gender gender
+
+
 
 ) {
+
+
 }

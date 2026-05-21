@@ -19,23 +19,23 @@ public class FlightServiceController {
 
     private final FlightService flightService;
 
-      @PostMapping
+       @PostMapping
       public ResponseEntity<?> createFlight(@RequestBody @Valid CreateFlightRequest flightRequest) {
             flightService.createFlightData(flightRequest);
             return new  ResponseEntity<>(HttpStatus.CREATED);
       }
 
-      @GetMapping("/{uuid}")
-       public ResponseEntity<?> getFlightById(@PathVariable UUID uuid) {
+       @GetMapping("/{uuid}")
+       public ResponseEntity<?> getFlightById( @PathVariable  UUID uuid) {
 
-              return new ResponseEntity<>(flightService.getFlightById(uuid), HttpStatus.OK);
+              return ResponseEntity.ok(flightService.getFlightById(uuid));
 
       }
 
-      @GetMapping
-       public ResponseEntity<?> searchFlights( @Valid SearchRequest searchRequest) {
+       @PostMapping("/search")
+       public ResponseEntity<?> searchFlights( @RequestBody @Valid SearchRequest searchRequest) {
 
-              return new ResponseEntity<>(flightService.searchFlights(searchRequest), HttpStatus.OK);
+            return ResponseEntity.ok(flightService.searchFlights(searchRequest));
 
 
       }
@@ -63,7 +63,7 @@ public class FlightServiceController {
              return new ResponseEntity<>(HttpStatus.OK);
       }
 
-      @PatchMapping("{uuid}/schedule")
+      @PatchMapping("/{uuid}/schedule")
       public ResponseEntity<?> updateFlightSchedule(@RequestBody @Valid UpdateFlightSchedule updateFlightSchedule, @PathVariable UUID uuid)
       {
               flightService.updateFlightSchedule(uuid,updateFlightSchedule);
@@ -77,16 +77,21 @@ public class FlightServiceController {
     }
 
     @PostMapping("/{uuid}/reserve")
-    public ResponseEntity<?> reserveFlight(@PathVariable UUID uuid,ReserveSeatsRequest reserveSeatsRequest) {
+    public ResponseEntity<?> reserveFlight(@PathVariable UUID uuid,@Valid @RequestBody ReserveSeatsRequest reserveSeatsRequest) {
 
-          flightService.reserveSeats(uuid,reserveSeatsRequest);
-          return new ResponseEntity<>(HttpStatus.OK);
+
+        return ResponseEntity.ok(
+                flightService.reserveSeats(
+                        uuid,
+                        reserveSeatsRequest
+                )
+        );
 
     }
 
     @PostMapping("/{uuid}/release")
-    public ResponseEntity<?> releaseFlight(@PathVariable UUID uuid) {
-          flightService.releaseFlight(uuid);
+    public ResponseEntity<?> releaseFlight(@PathVariable UUID uuid ,@RequestBody ReserveSeatsRequest releaseSeatsRequest) {
+          flightService.releaseFlight(uuid,releaseSeatsRequest);
           return new ResponseEntity<>(HttpStatus.OK);
     }
 

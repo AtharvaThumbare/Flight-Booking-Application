@@ -1,7 +1,6 @@
 package com.atharva.flightauthservice.Security;
 
 import com.atharva.flightauthservice.Entity.User;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 public class UserPrincipal implements UserDetails {
 
     private Long id;
-    private UUID uuid;
+    private UUID userUUID;
     private String email;
     private String password;
     private boolean active;
@@ -25,14 +24,14 @@ public class UserPrincipal implements UserDetails {
 
     public UserPrincipal(
             Long id,
-            UUID uuid,
+            UUID userUUID,
             String email,
             String password,
             boolean active,
             Collection<? extends GrantedAuthority> authorities
     ) {
         this.id = id;
-        this.uuid = uuid;
+        this.userUUID = userUUID;
         this.email = email;
         this.password = password;
         this.active = active;

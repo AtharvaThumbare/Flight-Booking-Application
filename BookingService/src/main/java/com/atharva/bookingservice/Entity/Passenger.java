@@ -1,12 +1,13 @@
 package com.atharva.bookingservice.Entity;
 
+import com.atharva.bookingservice.Enums.Gender;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Data
+@Builder
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Passenger {
     @Id
     private Long id;
@@ -24,7 +25,7 @@ public class Passenger {
     @JoinColumn(name = "booking_id")
     private Booking booking;
 
-    private enum Gender {
-        MALE, FEMALE
-    }
+
+
+
 }

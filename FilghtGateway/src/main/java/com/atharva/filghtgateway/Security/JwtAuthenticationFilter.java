@@ -2,6 +2,7 @@ package com.atharva.filghtgateway.Security;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -47,6 +48,11 @@ public class JwtAuthenticationFilter implements WebFilter {
 
         String email =
                 jwtUtil.getEmailFromJwtToken(token);
+
+        String userUUID =
+                jwtUtil.getUserUUIDFromToken(token);
+
+
 
         List<String> roles =
                 jwtUtil.extractRoles(token);
